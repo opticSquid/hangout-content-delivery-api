@@ -1,0 +1,5 @@
+logging:
+  level: TRACE
+
+server:
+  port: 5015
