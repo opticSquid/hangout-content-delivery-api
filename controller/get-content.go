@@ -5,22 +5,10 @@ import (
 	"net/http"
 
 	"github.com/rs/zerolog/log"
-	"go.opentelemetry.io/contrib/bridges/otelslog"
-	"go.opentelemetry.io/otel"
 	"hangoutsb.in/hangout-content-delivery-api/model"
 )
 
-const name = "hangoutsb.in/hangout-content-delivery-api/controller"
-
-var (
-	tracer = otel.Tracer(name)
-	meter  = otel.Meter(name)
-	logger = otelslog.NewLogger(name)
-)
-
 func GetContent(w http.ResponseWriter, r *http.Request) {
-	ctx, span := tracer.Start(r.Context(), "controller")
-	defer span.End()
 	log.Info().Str("Path", r.Pattern).Str("Method", r.Method).Msg("recieved request")
 	// Only allow GET requests
 	if r.Method != http.MethodGet {
