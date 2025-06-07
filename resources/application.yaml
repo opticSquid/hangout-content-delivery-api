@@ -3,3 +3,12 @@ logging:
 
 server:
   port: 5015
+
+application:
+  name: hangout-content-delivery-api
+
+storage:
+  endpoint: 
+  accessKey:
+  secretKey:
+  isSecure: 
