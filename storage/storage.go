@@ -28,9 +28,16 @@ func BlobStorageConnInit(config *koanf.Koanf) {
 
 func GetPreSignedUrl(filenameWithExtension string, config *koanf.Koanf) *url.URL {
 	log.Debug().Str("file", filenameWithExtension).Msg("fetching presigned url")
+	// Extract base file name
+	baseFileName := getBaseFileName(filenameWithExtension)
+
+	// Construct the correct object path: <baseFileName>/<filenameWithExtension>
+	objectKey := baseFileName + "/" + filenameWithExtension
+
 	reqParams := make(url.Values)
-	reqParams.Set("response-content-disposition", "attachment; filename=\""+filenameWithExtension+"\"")
-	presignedURL, err := blobClient.PresignedGetObject(context.Background(), config.String("storage.bucketName"), getBaseFileName(filenameWithExtension)+"/"+filenameWithExtension, time.Duration(300)*time.Second, reqParams)
+	reqParams.Set("response-content-disposition", "attachment; filename="+filenameWithExtension)
+
+	presignedURL, err := blobClient.PresignedGetObject(context.Background(), config.String("storage.bucketName"), objectKey, time.Duration(300)*time.Second, reqParams)
 	if err != nil {
 		log.Fatal().Str("file", filenameWithExtension).Str("reasson", err.Error()).Msg("could not fetch presigned url of file")
 	}
@@ -39,11 +46,13 @@ func GetPreSignedUrl(filenameWithExtension string, config *koanf.Koanf) *url.URL
 }
 
 func getBaseFileName(filenameWithExtension string) string {
+	// Expected format: <base_name>_<resolution>.<ext>
 	lastDotIndex := strings.LastIndex(filenameWithExtension, "_")
 	if lastDotIndex != -1 && lastDotIndex < len(filenameWithExtension)-1 {
 		// Extract the substring before the last dot
 		log.Debug().Str("base-file-name", filenameWithExtension[:lastDotIndex])
 		return filenameWithExtension[:lastDotIndex]
 	}
+	log.Debug().Str("base-file-name", filenameWithExtension[:lastDotIndex])
 	return filenameWithExtension
 }
