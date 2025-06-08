@@ -1,58 +1,47 @@
 package storage
 
 import (
-	"context"
-	"net/url"
-	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/knadh/koanf/v2"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/rs/zerolog/log"
 )
 
-var blobClient *minio.Client
+var sess *session.Session
 
 func BlobStorageConnInit(config *koanf.Koanf) {
-	log.Debug().Str("storage url", config.String("storage.endpoint")).Msg("connecting to blob storage")
-	s3Client, err := minio.New(config.String("storage.endpoint"), &minio.Options{
-		Creds:  credentials.NewStaticV4(config.String("storage.accessKey"), config.String("storage.secretKey"), ""),
-		Secure: config.Bool("storage.isSecure"),
+	s, err := session.NewSession(&aws.Config{
+		Region:      aws.String(config.String("storage.region")),
+		Credentials: credentials.NewStaticCredentials(config.String("storage.accessKey"), config.String("storage.secretKey"), ""),
+	},
+	)
+
+	if err != nil {
+		log.Fatal().Msg("could not login to aws")
+	}
+	sess = s
+	log.Info().Msg("logged in to aws")
+}
+
+func GetPreSignedUrl(filenameWithExtension string, config *koanf.Koanf) string {
+
+	// Create S3 service client
+	svc := s3.New(sess)
+
+	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(config.String("storage.bucketName")),
+		Key:    aws.String(filenameWithExtension),
 	})
+	urlStr, err := req.Presign(5 * time.Minute)
+
 	if err != nil {
-		log.Fatal().Str("reasson", err.Error()).Msg("could not connect to blob storage")
-	}
-	blobClient = s3Client
-}
-
-func GetPreSignedUrl(filenameWithExtension string, config *koanf.Koanf) *url.URL {
-	log.Debug().Str("file", filenameWithExtension).Msg("fetching presigned url")
-	// Extract base file name
-	baseFileName := getBaseFileName(filenameWithExtension)
-
-	// Construct the correct object path: <baseFileName>/<filenameWithExtension>
-	objectKey := baseFileName + "/" + filenameWithExtension
-
-	reqParams := make(url.Values)
-	reqParams.Set("response-content-disposition", "attachment; filename="+filenameWithExtension)
-
-	presignedURL, err := blobClient.PresignedGetObject(context.Background(), config.String("storage.bucketName"), objectKey, time.Duration(300)*time.Second, reqParams)
-	if err != nil {
-		log.Fatal().Str("file", filenameWithExtension).Str("reasson", err.Error()).Msg("could not fetch presigned url of file")
+		log.Fatal().Str("error", err.Error()).Msg("Failed to Sign request")
 	}
 
-	return presignedURL
-}
-
-func getBaseFileName(filenameWithExtension string) string {
-	// Expected format: <base_name>_<resolution>.<ext>
-	lastDotIndex := strings.LastIndex(filenameWithExtension, "_")
-	if lastDotIndex != -1 && lastDotIndex < len(filenameWithExtension)-1 {
-		// Extract the substring before the last dot
-		log.Debug().Str("base-file-name", filenameWithExtension[:lastDotIndex])
-		return filenameWithExtension[:lastDotIndex]
-	}
-	log.Debug().Str("base-file-name", filenameWithExtension[:lastDotIndex])
-	return filenameWithExtension
+	log.Debug().Str("PreSigned URL", urlStr).Msg("Presigned url generated")
+	return urlStr
 }

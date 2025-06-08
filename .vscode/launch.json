@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["--profile", "local"]
+            "args": ["--profile", "aws"]
         }
 
     ]

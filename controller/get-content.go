@@ -27,7 +27,7 @@ func GetContent(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// Create a response object
 	resp := model.Response{
-		Url:       storage.GetPreSignedUrl(r.PathValue("content_id"), config).String(),
+		Url:       storage.GetPreSignedUrl(r.PathValue("content_id"), config),
 		ContentId: r.PathValue("content_id"),
 	}
 	// Encode response to JSON and write to client
