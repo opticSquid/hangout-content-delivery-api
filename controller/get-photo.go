@@ -48,4 +48,5 @@ func (config *ControllerConfig) GetPhoto(w http.ResponseWriter, r *http.Request)
 		log.Error().Err(err).Msg("failed to encode json response")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+	log.Info().Str("Path", r.Pattern).Str("Method", r.Method).Msg("response sent")
 }

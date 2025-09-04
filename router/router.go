@@ -11,7 +11,7 @@ import (
 func StartServer(k *koanf.Koanf, cc *controller.ControllerConfig) {
 	log.Info().Str("application name", k.String("application.name")).Str("status", "starting").Msg("starting application")
 
-	http.HandleFunc("/"+k.String("application.name")+"/get-content/{content_id}", cc.GetContent)
+	http.HandleFunc("/"+k.String("application.name")+"/get-content/{content_id}", cc.GetVideo)
 	http.HandleFunc("/"+k.String("application.name")+"/get-profile-photo/{photo_id}", cc.GetPhoto)
 
 	log.Info().Str("port", k.String("server.port")).Msg("starting http server")

@@ -9,7 +9,7 @@ import (
 	"hangoutsb.in/hangout-content-delivery-api/storage"
 )
 
-func (config *ControllerConfig) GetContent(w http.ResponseWriter, r *http.Request) {
+func (config *ControllerConfig) GetContentLegacy(w http.ResponseWriter, r *http.Request) {
 	log.Info().Str("Path", r.Pattern).Str("Method", r.Method).Msg("recieved request")
 	// Only allow GET requests
 	if r.Method != http.MethodGet {
@@ -42,7 +42,7 @@ func (config *ControllerConfig) GetContent(w http.ResponseWriter, r *http.Reques
 		resp = model.Response{
 			ContentId: fileName,
 		}
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 
 	}
 	// Set the content type to JSON
