@@ -4,19 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/knadh/koanf/v2"
 	"github.com/rs/zerolog/log"
 	"hangoutsb.in/hangout-content-delivery-api/model"
 	"hangoutsb.in/hangout-content-delivery-api/storage"
 )
 
-var config *koanf.Koanf
-
-func SetConfig(c *koanf.Koanf) {
-	config = c
-}
-
-func GetContent(w http.ResponseWriter, r *http.Request) {
+func (config *ControllerConfig) GetContent(w http.ResponseWriter, r *http.Request) {
 	log.Info().Str("Path", r.Pattern).Str("Method", r.Method).Msg("recieved request")
 	// Only allow GET requests
 	if r.Method != http.MethodGet {
@@ -27,7 +20,7 @@ func GetContent(w http.ResponseWriter, r *http.Request) {
 
 	fileName := r.PathValue("content_id")
 	// Set cookies in response Object
-	expiresCookie, signatureCookie, keyPairIDCookie, policyCookie, err := storage.GeneratePreSignedCookies(fileName, config)
+	expiresCookie, signatureCookie, keyPairIDCookie, policyCookie, err := storage.GeneratePreSignedCookies(fileName, config.appConfig)
 
 	var resp model.Response
 

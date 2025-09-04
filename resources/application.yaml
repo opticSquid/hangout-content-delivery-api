@@ -7,8 +7,26 @@ server:
 application:
   name: hangout-content-delivery-api
 
+aws:
+  region:
+  image:
+    s3:
+      bucket:
+  video:
+    cloudfront:
+      privateKeyPath:
+      publicKeyID: 
+      domain:
+      expirationDurationInSeconds:
+
 storage:
-  endpoint: 
-  accessKey:
-  secretKey:
-  isSecure: 
+  content:
+    endpoint: 
+    accessKey:
+    secretKey:
+    isSecure:
+  photo:
+    endpoint: 
+    accessKey:
+    secretKey:
+    isSecure:
