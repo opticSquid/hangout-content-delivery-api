@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"context"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
@@ -11,11 +12,20 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/feature/cloudfront/sign"
 	"github.com/knadh/koanf/v2"
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 )
 
-func GeneratePreSignedCookies(dirName string, k *koanf.Koanf) ([]*http.Cookie, error) {
-
+func GeneratePreSignedCookies(dirName string, k *koanf.Koanf, log zerolog.Logger, ctx context.Context) ([]*http.Cookie, error) {
+	tr := otel.Tracer("hangout.content-delivery-api.aws")
+	ctx, span := tr.Start(ctx, "generate presigned cookies")
+	defer span.End()
+	span.SetAttributes(
+		attribute.String("dirname", dirName),
+		attribute.String("sign-type", "presign cookie"),
+	)
+	log = log.With().Ctx(ctx).Str("sign-type", "presign cookie").Logger()
 	privateKeyPath := k.String("aws.video.cloudfront.privateKeyPath")
 	privateKeyBytes, err := os.ReadFile(privateKeyPath)
 	if err != nil {
@@ -24,7 +34,7 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf) ([]*http.Cookie, e
 	}
 	log.Debug().Msg("successfully read private key")
 
-	privateKey, err := parsePrivateKey(privateKeyBytes)
+	privateKey, err := parsePrivateKey(privateKeyBytes, log, ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to parse private key")
 		return nil, fmt.Errorf("failed to parse private key: %w", err)
@@ -48,7 +58,8 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf) ([]*http.Cookie, e
 }
 
 // parsePrivateKey parses a PEM-encoded RSA private key.
-func parsePrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
+func parsePrivateKey(pemBytes []byte, log zerolog.Logger, ctx context.Context) (*rsa.PrivateKey, error) {
+	log = log.With().Ctx(ctx).Logger()
 	block, _ := pem.Decode(pemBytes)
 	if block == nil || block.Type != "PRIVATE KEY" {
 		return nil, fmt.Errorf("failed to decode PEM block containing RSA private key")

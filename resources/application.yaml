@@ -19,14 +19,5 @@ aws:
       domain:
       expirationDurationInSeconds:
 
-storage:
-  content:
-    endpoint: 
-    accessKey:
-    secretKey:
-    isSecure:
-  photo:
-    endpoint: 
-    accessKey:
-    secretKey:
-    isSecure:
+otel:
+  endpoint: localhost:4317

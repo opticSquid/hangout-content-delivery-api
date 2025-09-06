@@ -12,7 +12,7 @@ func StartServer(k *koanf.Koanf, cc *controller.ControllerConfig) {
 	log.Info().Str("application name", k.String("application.name")).Str("status", "starting").Msg("starting application")
 
 	http.HandleFunc("/"+k.String("application.name")+"/get-content/{video_id}", cc.GetVideo)
-	http.HandleFunc("/"+k.String("application.name")+"/get-profile-photo/{photo_id}", cc.GetPhoto)
+	http.HandleFunc("/"+k.String("application.name")+"/get-profile-photo/{image_id}", cc.GetImage)
 
 	log.Info().Str("port", k.String("server.port")).Msg("starting http server")
 	if err := http.ListenAndServe(":"+k.String("server.port"), nil); err != nil {
