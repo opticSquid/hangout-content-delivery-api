@@ -37,8 +37,9 @@ func (config *ControllerConfig) GetPhoto(w http.ResponseWriter, r *http.Request)
 
 	// Prepare response payload
 	resp := map[string]string{
-		"photoId": fileName,
+		"file":    fileName,
 		"url":     url,
+		"message": "Signed URL genereated successfully",
 	}
 
 	w.WriteHeader(http.StatusOK)

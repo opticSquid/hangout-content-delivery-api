@@ -41,7 +41,9 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf) ([]*http.Cookie, e
 		return nil, fmt.Errorf("failed to generate cookies: %w", err)
 	}
 	log.Debug().Msg("successfully generated cookies")
-
+	for _, c := range cookies {
+		customizeCookie(c, dirName, k)
+	}
 	return cookies, nil
 }
 
@@ -63,4 +65,11 @@ func parsePrivateKey(pemBytes []byte) (*rsa.PrivateKey, error) {
 		return nil, fmt.Errorf("parsed PKCS#8 private key is not an RSA private key (got %T)", privateKeyInterface)
 	}
 	return rsaKey, nil
+}
+
+func customizeCookie(c *http.Cookie, dirName string, k *koanf.Koanf) *http.Cookie {
+	c.Domain = k.String("aws.video.cloudfront.domain")
+	c.Path = dirName
+	c.Expires = time.Now().Add(time.Duration(k.Int("aws.video.cloudfront.expirationDurationInSeconds")) * time.Second)
+	return c
 }

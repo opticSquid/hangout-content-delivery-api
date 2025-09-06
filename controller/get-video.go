@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -17,7 +18,8 @@ func (config *ControllerConfig) GetVideo(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	fileName := r.PathValue("video_id")
-	preSignedCookies, err := aws.GeneratePreSignedCookies(getDirName(fileName), config.appConfig)
+	dirName := getDirName(fileName)
+	preSignedCookies, err := aws.GeneratePreSignedCookies(dirName, config.appConfig)
 	if err != nil {
 		log.Error().Err(err).Str("video file", fileName).Msg("could not generate cookies for the given file")
 		writeProblemDetails(w, http.StatusInternalServerError, "Failed to generate Presigned cookies", "Could not generate presigned cookies for the given file. Make sure the filename is valid", "https://httpstatuses.com/500", r.URL.Path)
@@ -29,7 +31,17 @@ func (config *ControllerConfig) GetVideo(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte(`{"message":"Signed cookies set successfully"}`))
+	// Prepare response payload
+	resp := map[string]string{
+		"file":    fileName,
+		"message": "Signed cookies set successfully",
+	}
+	// Encode response as JSON
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Error().Err(err).Msg("failed to encode json response")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	log.Info().Str("Path", r.Pattern).Str("Method", r.Method).Msg("response sent")
 
 }
 
@@ -40,5 +52,4 @@ func getDirName(filename string) string {
 	} else {
 		return filename
 	}
-
 }
