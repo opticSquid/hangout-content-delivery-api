@@ -15,7 +15,7 @@ aws:
   video:
     cloudfront:
       privateKeyPath:
-      publicKeyID: 
+      publicKeyId: 
       domain:
       expirationDurationInSeconds:
 
