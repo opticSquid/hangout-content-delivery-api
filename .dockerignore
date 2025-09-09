@@ -1,0 +1,6 @@
+certificates
+.git
+.gitignore
+.vscode
+*.code-workspace
+application-*.yaml
