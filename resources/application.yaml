@@ -12,12 +12,13 @@ aws:
   image:
     s3:
       bucket:
+      expiration-duration-seconds:
   video:
     cloudfront:
-      privateKeyPath:
-      publicKeyId: 
+      private-key-path:
+      public-key-id:
       domain:
-      expirationDurationInSeconds:
+      expiration-duration-seconds:
 
 otel:
-  endpoint: localhost:4317
+  endpoint:
