@@ -3,7 +3,7 @@ module hangoutsb.in/hangout-content-delivery-api
 go 1.23.4
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.38.3
+	github.com/aws/aws-sdk-go-v2 v1.39.0
 	github.com/google/uuid v1.6.0
 	github.com/knadh/koanf/v2 v2.2.0
 	go.opentelemetry.io/otel v1.38.0
@@ -57,7 +57,7 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/config v1.31.0
-	github.com/aws/aws-sdk-go-v2/feature/cloudfront/sign v1.9.6
+	github.com/aws/aws-sdk-go-v2/feature/cloudfront/sign v1.9.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.87.3
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/knadh/koanf/maps v0.1.2 // indirect
