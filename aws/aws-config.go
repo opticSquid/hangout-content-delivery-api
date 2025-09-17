@@ -11,7 +11,7 @@ import (
 
 func InitAwsConfig(k *koanf.Koanf) *aws.Config {
 	log.Info().Str("aws connection", "Initiating").Msg("connecting to aws")
-	awsConn, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(k.String("aws.regoin")))
+	awsConn, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(k.String("aws.region")))
 	if err != nil {
 		log.Fatal().Str("aws connection", "Failed").Msg("connection to aws failed")
 	}
