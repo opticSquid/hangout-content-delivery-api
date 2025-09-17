@@ -3,7 +3,6 @@ FROM golang:alpine3.22 AS builder
 WORKDIR /usr/src/app
 
 COPY go.mod go.sum ./
-
 RUN go mod download
 
 COPY . .
@@ -14,11 +13,12 @@ FROM alpine:3
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-WORKDIR /app
+WORKDIR /home/appuser/app
 
-COPY --from=builder /usr/src/app/hangout-content-delivery-api .
+COPY --chown=appuser:appgroup --from=builder /usr/src/app/resources/application.yaml ./resources/
+COPY --chown=appuser:appgroup --from=builder /usr/src/app/hangout-content-delivery-api ./
 
-RUN chown appuser:appgroup /app/hangout-content-delivery-api
+RUN mkdir -p /mnt/certs && chown -R appuser:appgroup /mnt/certs
 
 USER appuser
 
