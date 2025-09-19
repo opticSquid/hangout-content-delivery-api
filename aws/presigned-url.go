@@ -27,7 +27,7 @@ func GeneratePreSignedUrl(cfg *aws.Config, k *koanf.Koanf, image string, log zer
 	client := s3.NewFromConfig(*cfg)
 	presignClient := s3.NewPresignClient(client)
 	bucket := k.String("aws.image.s3.bucket")
-	expiration := k.Int("aws.image.s3.expiration-duration-seconds")
+	expiration := k.Int("aws.image.s3.expiration_duration_seconds")
 	log.Info().Msg("presigning file")
 	req, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),

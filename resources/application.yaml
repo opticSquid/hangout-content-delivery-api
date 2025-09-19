@@ -12,13 +12,13 @@ aws:
   image:
     s3:
       bucket:
-      expiration-duration-seconds:
+      expiration_duration_seconds:
   video:
     cloudfront:
-      private-key-path:
-      public-key-id:
+      private_key_path:
+      public_key_id:
       domain:
-      expiration-duration-seconds:
+      expiration_duration_seconds:
 
 otel:
   endpoint:

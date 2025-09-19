@@ -26,7 +26,7 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf, log zerolog.Logger
 		attribute.String("sign-type", "presign cookie"),
 	)
 	log = log.With().Ctx(ctx).Str("sign-type", "presign cookie").Logger()
-	privateKeyPath := k.String("aws.video.cloudfront.private-key-path")
+	privateKeyPath := k.String("aws.video.cloudfront.private_key_path")
 	privateKeyBytes, err := os.ReadFile(privateKeyPath)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to read private key")
@@ -41,8 +41,8 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf, log zerolog.Logger
 	}
 	log.Debug().Msg("successfully parsed private key")
 
-	publicKeyId := k.String("aws.video.cloudfront.public-key-id")
-	expiresAt := time.Now().Add(time.Duration(k.Int("aws.video.cloudfront.expirationDurationInSeconds")) * time.Second)
+	publicKeyId := k.String("aws.video.cloudfront.public_key_id")
+	expiresAt := time.Now().Add(time.Duration(k.Int("aws.video.cloudfront.expiration_duration_seconds")) * time.Second)
 	resource := fmt.Sprintf("http*://%s/%s/*", k.String("aws.video.cloudfront.domain"), dirName)
 
 	log.Debug().Msg("starting to generate cookies")
