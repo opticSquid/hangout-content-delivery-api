@@ -52,7 +52,7 @@ func GeneratePreSignedCookies(dirName string, k *koanf.Koanf, log zerolog.Logger
 	}
 	log.Debug().Msg("successfully generated cookies")
 	for _, c := range cookies {
-		customizeCookie(c, dirName, k)
+		customizeCookie(c, dirName, expiresAt, k)
 	}
 	return cookies, nil
 }
@@ -78,9 +78,9 @@ func parsePrivateKey(pemBytes []byte, log zerolog.Logger, ctx context.Context) (
 	return rsaKey, nil
 }
 
-func customizeCookie(c *http.Cookie, dirName string, k *koanf.Koanf) *http.Cookie {
-	c.Domain = k.String("aws.video.cloudfront.domain")
-	c.Path = dirName
-	c.Expires = time.Now().Add(time.Duration(k.Int("aws.video.cloudfront.expiration-duration-seconds")) * time.Second)
+func customizeCookie(c *http.Cookie, dirName string, expiresAt time.Time, k *koanf.Koanf) *http.Cookie {
+	c.Domain = "." + k.String("cookie.domain")
+	c.Path = "/" + dirName
+	c.Expires = expiresAt
 	return c
 }

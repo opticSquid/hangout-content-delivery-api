@@ -20,5 +20,8 @@ aws:
       domain:
       expiration-duration-seconds:
 
+cookie:
+  domain:      
+
 otel:
   endpoint:
