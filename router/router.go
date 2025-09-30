@@ -11,8 +11,8 @@ import (
 func StartServer(k *koanf.Koanf, cc *controller.ControllerConfig) {
 	log.Info().Str("application name", k.String("application.name")).Str("status", "starting").Msg("starting application")
 
-	http.HandleFunc("/"+k.String("application.name")+"/get-content/{video_id}", cc.GetVideo)
-	http.HandleFunc("/"+k.String("application.name")+"/get-profile-photo/{image_id}", cc.GetImage)
+	http.HandleFunc("/"+k.String("application.name")+"/v1/get-content/{video_id}", withCORS(cc.GetVideo, k))
+	http.HandleFunc("/"+k.String("application.name")+"/v1/get-profile-photo/{image_id}", withCORS(cc.GetImage, k))
 
 	log.Info().Str("port", k.String("server.port")).Msg("starting http server")
 	if err := http.ListenAndServe(":"+k.String("server.port"), nil); err != nil {
