@@ -82,5 +82,8 @@ func customizeCookie(c *http.Cookie, dirName string, expiresAt time.Time, k *koa
 	c.Domain = "." + k.String("cookie.domain")
 	c.Path = "/" + dirName
 	c.Expires = expiresAt
+	c.SameSite = http.SameSiteNoneMode
+	c.Secure = true
+	c.HttpOnly = true
 	return c
 }

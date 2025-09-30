@@ -25,3 +25,6 @@ cookie:
 
 otel:
   endpoint:
+
+cors:
+  allowed-origins:
